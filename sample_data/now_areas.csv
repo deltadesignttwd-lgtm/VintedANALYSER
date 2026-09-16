@@ -1,4 +1,8 @@
-Type,Level,Number,Area
+Room Schedule 4,,,
+Name,Level,Number,Area
+,,,
+Residential Entrance,L1 L00,82,49.13 m²
+Cycle Store,L1 L00,84,115.20 m²
 1B2P,L1 L02,L1-02-06,53.19 m²
 1B2P,L1 L02,L1-02-07,53.19 m²
 2B4P,L1 L02,L1-02-08,80.10 m²

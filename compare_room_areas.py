@@ -44,13 +44,32 @@ def extract_area_value(area: object) -> Optional[float]:
         return None
 
 
+def find_header_row(path: str, key_column: str, area_column: str, max_scan: int = 20) -> Optional[int]:
+    """Some exported CSVs have a title row (and sometimes blank rows) above
+    the real header. Scan the first few rows and return the index of the
+    one that actually contains both required column names."""
+    import csv
+
+    with open(path, encoding="utf-8-sig", newline="") as f:
+        reader = csv.reader(f)
+        for idx, row in enumerate(reader):
+            if idx >= max_scan:
+                break
+            if key_column in row and area_column in row:
+                return idx
+    return None
+
+
 def load_areas(path: str, key_column: str, area_column: str) -> pd.DataFrame:
-    df = pd.read_csv(path, dtype=str)
-    if key_column not in df.columns or area_column not in df.columns:
+    header_row = find_header_row(path, key_column, area_column)
+    if header_row is None:
         raise SystemExit(
-            f"'{path}' must contain columns '{key_column}' and '{area_column}'. "
-            f"Found: {list(df.columns)}"
+            f"Could not find a header row containing both '{key_column}' and "
+            f"'{area_column}' in the first 20 rows of '{path}'. Check the column "
+            "names, or pass --key / --area-column to match your file."
         )
+    df = pd.read_csv(path, dtype=str, header=header_row, encoding="utf-8-sig")
+    df = df.dropna(subset=[key_column, area_column])
     df["_value"] = df[area_column].apply(extract_area_value)
     return df[[key_column, area_column, "_value"]]
 
