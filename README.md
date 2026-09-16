@@ -33,6 +33,42 @@ Example, a different category and saving output:
 python vinted_analyser.py --category-id 1904 --save results.json
 ```
 
+## Room area comparison tool
+
+`compare_room_areas.py` compares room areas between a "now" CSV and a
+"contract" CSV, flags differences, and writes an Excel report with
+mismatches highlighted.
+
+For each `Area` cell (e.g. `49.13 m²`), it:
+
+1. Takes the first 4 characters from the left (e.g. `49.1`, or `115.` for
+   three-digit areas).
+2. Converts that snippet into a numeric value (e.g. `49.1`, `115.0`).
+3. Matches rows between the two files by the `Number` column and compares
+   the converted values, adding a `Difference` column and a `Status`
+   column (`Match`, `Mismatch`, `Missing in now`, `Missing in contract`).
+
+```bash
+python compare_room_areas.py now.csv contract.csv --output comparison.xlsx
+```
+
+Options:
+
+```
+--key           Column used to match rows between files (default: Number)
+--area-column   Column holding the area value (default: Area)
+--output        Output .xlsx path (default: comparison.xlsx)
+```
+
+Try it on the bundled sample data:
+
+```bash
+python compare_room_areas.py sample_data/now_areas.csv sample_data/contract_areas.csv --output comparison.xlsx
+```
+
+The generated `comparison.xlsx` highlights mismatched rows in red and
+rows missing from one side in yellow.
+
 ## Notes / known limitations
 
 - **Anti-bot protection**: Vinted fronts its site with bot detection
